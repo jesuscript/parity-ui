@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Parity</title>
+  </head>
+  <body>
+    <h1 class="text">This is Parity, the sickest Ethereum client out there!</h1>
+    <button class="close">Close</button>
+    <div id="react-root"></div>
+
+    <script>
+     var bundlePath = '../build/bundle.js';
+
+     if(typeof process !== 'undefined' && process.env.ENVIRONMENT === 'development') {
+       bundlePath = 'http://localhost:8080/build/bundle.js';
+       
+     }
+
+     var bundleScriptEl = document.createElement('script');
+     bundleScriptEl.src = bundlePath;
+     document.currentScript.parentNode.insertBefore(bundleScriptEl, document.currentScript);
+    </script>
+    <script src="js/stub.js"></script>
+  </body>
+</html>

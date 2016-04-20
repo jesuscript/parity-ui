@@ -4,25 +4,28 @@
   "description": "User interface for Parity",
   "main": "main.js",
   "scripts": {
-    "start": "electron main.js"
+    "start": "ENVIRONMENT=production electron main.js",
+    "start-dev": "ENVIRONMENT=development electron main.js",
+    "build": "webpack",
+    "watch": "webpack-dev-server --inline --hot --colors --content-base=./build"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jesuscript/parity-ui.git"
   },
-  "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial"
-  ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
-  "bugs": {
-    "url": "https://github.com/electron/electron-quick-start/issues"
-  },
-  "homepage": "https://github.com/electron/electron-quick-start#readme",
+  "author": "Konstantin Kudryavtsev",
+  "license": "GPL-3.0",
   "devDependencies": {
-    "electron-prebuilt": "^0.37.0"
-  }
+    "babel": "^6.5.2",
+    "babel-core": "^6.7.6",
+    "babel-loader": "^6.2.4",
+    "babel-preset-react": "^6.5.0",
+    "electron-compilers": "^3.0.0",
+    "electron-prebuilt": "^0.37.0",
+    "react": "^15.0.1",
+    "react-dom": "^15.0.1",
+    "webpack": "^1.13.0",
+    "webpack-dev-server": "^1.14.1"
+  },
+  "dependencies": {}
 }

@@ -1,0 +1,19 @@
+var React = require('react');
+var ReactDom = require('react-dom');
+
+var App = React.createClass({
+  render: function() {
+    return <h1>Hello from React!</h1>;
+  }
+});
+
+ReactDom.render(<App/>, document.getElementById('react-root'));
+
+var ipc = window.require('electron').ipcRenderer;
+
+var closeEl = document.querySelector('.close');
+closeEl.addEventListener('click', function () {
+  ipc.send('close-main-window');
+});
+
+
