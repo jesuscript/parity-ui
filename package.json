@@ -27,5 +27,12 @@
     "webpack": "^1.13.0",
     "webpack-dev-server": "^1.14.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "jquery": "^2.2.3",
+    "less": "^2.6.1",
+    "less-loader": "^2.2.3",
+    "lodash": "^4.11.1",
+    "react": "^15.0.1",
+    "react-dom": "^15.0.1"
+  }
 }

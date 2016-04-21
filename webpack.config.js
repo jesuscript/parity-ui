@@ -20,12 +20,16 @@ module.exports = {
   module: {
     loaders: [
       {
-        test: /\.js$/,
+        test: /\.js|.jsx$/,
         loader: 'babel-loader',
         query: {
           presets: ['es2015', 'react']
         }
       }
     ]
+  },
+  externals: {
+    electron: 'require("electron")',
+    remote: 'require("remote")'
   }
 };
