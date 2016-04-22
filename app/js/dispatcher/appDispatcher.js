@@ -1,16 +1,16 @@
 "use strict"
-const messages = require('../constants/messages')
-const Serializer = require('../dispatcher/serializer')
+var _ = require("lodash"),
+    util = require("util"),
+    Dispatcher = require("flux").Dispatcher
 
-class AppDispatcher {
-  dispatch (action) {
-    if (process.type === 'renderer') {
-      require('electron').ipcRenderer.send(messages.APP_ACTION, Serializer.serialize(action))
-    } else {
-      process.emit(messages.APP_ACTION, action)
-    }
-  }
+var messages = require("../constants/messages")
+    
+var AppDispatcher = function(){
+  Dispatcher.call(this)
 }
 
+util.inherits(AppDispatcher, Dispatcher)
 
-module.exports = new AppDispatcher()
+module.exports =  new AppDispatcher()
+
+

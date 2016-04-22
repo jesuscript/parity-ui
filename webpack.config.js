@@ -12,6 +12,9 @@ module.exports = {
     path: __dirname + '/build',
     publicPath: "http://localhost:8080/build/"
   },
+  resolve:{
+    extensions: ["", ".webpack.js", ".web.js", ".js", ".coffee"]
+  },
   resolveLoader: { root: path.join(__dirname, 'node_modules') },
   devServer: {
     //contentBase: "",
@@ -25,7 +28,8 @@ module.exports = {
         query: {
           presets: ['es2015', 'react']
         }
-      }
+      },
+      { test: /\.coffee$/, loader: "coffee-loader" }
     ]
   },
   externals: {

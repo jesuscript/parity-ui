@@ -4,7 +4,7 @@ var BrowserWindow = require('browser-window');
 var mainWindow = null;
 
 app.on('ready', function() {
-  mainWindow = new BrowserWindow({ height: 700, width: 700, frame: false });
+  mainWindow = new BrowserWindow({ height: 700, width: 700, frame: true });
   mainWindow.loadURL('file://' + __dirname + '/app/index.html');
   mainWindow.openDevTools();
   mainWindow.on('closed', function() {
