@@ -11,7 +11,8 @@ var Main = React.createClass({
   },
   componentDidMount: function() {
     this.setState({ uiVersion: remote.require("./package.json").version});
-    
+
+    //TODO: fail on missing parity
     exec("parity -v", (err, stdout, stderr) => {
       if(err) throw err;
       if(stdout){

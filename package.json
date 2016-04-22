@@ -28,11 +28,15 @@
     "webpack-dev-server": "^1.14.1"
   },
   "dependencies": {
+    "events": "^1.1.0",
+    "flux": "^2.1.1",
+    "immutable": "^3.8.1",
     "jquery": "^2.2.3",
     "less": "^2.6.1",
     "less-loader": "^2.2.3",
     "lodash": "^4.11.1",
     "react": "^15.0.1",
-    "react-dom": "^15.0.1"
+    "react-dom": "^15.0.1",
+    "util": "^0.10.3"
   }
 }
