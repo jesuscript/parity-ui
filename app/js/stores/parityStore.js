@@ -1,4 +1,3 @@
-"use strict";
 
 var EventEmitter = require("events").EventEmitter,
     Serializer = require("../dispatcher/serializer"),
@@ -6,16 +5,18 @@ var EventEmitter = require("events").EventEmitter,
     electron = require("electron"),
     objects = require("objects"),
     async = require("async"),
-    exec = remote.require("child_process").exec,
     _ = require("lodash")
 
 
 var appDispatcher = require("../dispatcher/appDispatcher"),
+    parityMessages = require("../constants/parityMessages"),
     messages = require("../constants/messages"),
     appConstants = require("../constants/appConstants"),
+    ParityProxy = require("../parityProxy"),
     CHANGE_EVENT = "parity-state-change",
     parityState,
-    lastEmittedState;
+    lastEmittedState,
+    parityProxy;
 
 //TODO: maintain state in the main process
 
@@ -23,25 +24,26 @@ var parityStore = _.extend({}, EventEmitter.prototype, {
   getState: function(cb){
     return parityState
   },
-  setState: function(){
+  setState: function(state){
     parityState = state
     parityStore.emitChanges();
+  },
+  updateState: function(changes){
+    parityStore.setState(_.merge({}, parityState, changes))
   },
   emitChanges: _.debounce(function(){
     if (lastEmittedState) {
       var diff = objects.subtract(lastEmittedState, parityState),
-          changes = _.merge({}, diff.added, diff.chaged)
+          changes = _.merge({}, diff.added, diff.changed)
 
       if (_.keys(changes).length) this.emit(CHANGE_EVENT, changes)
     }else{
-      console.log("emit", parityState);
       this.emit(CHANGE_EVENT, parityState)
     }
 
     lastEmittedState = parityState
   },5),
   addChangeListener: function(cb){
-    console.log("addchangelistener");
     parityStore.on(CHANGE_EVENT, cb)
   },
   removeChangeListener: function(cb){
@@ -52,38 +54,50 @@ var parityStore = _.extend({}, EventEmitter.prototype, {
 appDispatcher.register(function(payload){
   var action = payload.action
 
-  switch(action.actionType){
-    //case appConstants:
+  if(payload.source === messages.PARITY_ACTION){
+    switch(action.actionType){
+    case parityMessages.CLIENT_STATE:
+      let state = parityProxy.state
+      console.log("CLIENT_STATE", state);
+      if(state.syncing){
+        parityStore.updateState({clientState: appConstants.CLIENT_SYNCING})
+      }else if(state.running){
+        parityStore.updateState({clientState: appConstants.CLIENT_ACTIVE})
+      }else{
+        parityStore.updateState({clientState: appConstants.CLIENT_DISCONNECTED})
+      }
+
+      if(state.running){
+        parityStore.updateState({currentBlock: state.currentBlock, highestBlock: state.highestBlock})
+      }
+      break
     default:
+      console.warn("Unknown parity action type:", action.actionType)
+    }
   }
+
+  parityStore.emitChanges();
 })
 
 //initialisation
 
-var state = {
-  version: {
-    uiVersion: remote.require("./package.json").version 
-  }
-};
 async.auto({
-  fetchVersion: function(cb){
-    exec("parity -v", (err, stdout, stderr) => {
-      if(err) throw err;
-      if(stdout){
-        _.each(stdout.split("\n"), (s) => {
-          var match = s.match(/version\sParity([^\s]*)/);
-
-          if(match) _.extend(state.version, {clientVersion: match[1].split("/")[1]});
-        });
-      }
-
-      cb();
+  parityProxy: function(cb){
+    cb(null, parityProxy = new ParityProxy())
+  },
+  clientVersion: ["parityProxy", function(res, cb){
+    res.parityProxy.fetchVersion(function(err, version){
+      cb(err, version);
     })
-  }
-}, function(){
+  }]
+}, function(err, res){
+  var state = {
+    version: {
+      uiVersion: remote.require("./package.json").version,
+      clientVersion: res.clientVersion
+    }
+  };
   parityStore.setState(state);
 });
-
-
 
 module.exports = parityStore;

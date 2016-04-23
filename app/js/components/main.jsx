@@ -6,7 +6,9 @@ var React = require('react'),
     exec = remote.require("child_process").exec;
 
 var parityStore = require("../stores/parityStore"),
-    Heading = require("./heading.jsx")
+    Heading = require("./heading.jsx"),
+    Footer = require("./footer.jsx"),
+    WindowContent = require("./windowContent.jsx")
 
 var Main = React.createClass({
   getInitialState: function(){
@@ -15,22 +17,26 @@ var Main = React.createClass({
     }
   },
   componentDidMount: function() {
-    var onChange = this.onChange.bind(this, "parity")
+    var onChange = this.onChange.bind(this, "parity", parityStore)
     parityStore.addChangeListener(onChange)
     parityStore.getState(onChange)
   },
   render: function(){
     return(
-      <div class="main">
+      <div className="window">
         <Heading version={this.state.parity.version}/>
+        <WindowContent/>
+        <Footer clientState={this.state.parity.clientState}
+                currentBlock={this.state.parity.currentBlock}
+                highestBlock={this.state.parity.highestBlock}
+                />
       </div>
     ) 
   },
-  onChange: function(name, state){
+  onChange: function(name, store, state){
     var newState = {}
-    newState[name] = state
+    newState[name] = store.getState()
 
-    console.log("onchange", newState);
     this.setState(newState)
   }
 });

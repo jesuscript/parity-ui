@@ -23,13 +23,17 @@ module.exports = {
   module: {
     loaders: [
       {
-        test: /\.js|.jsx$/,
+        test: /\.js$|.jsx$/,
         loader: 'babel-loader',
         query: {
-          presets: ['es2015', 'react']
+          presets: ['react']
         }
       },
-      { test: /\.coffee$/, loader: "coffee-loader" }
+      { test: /\.coffee$/, loader: "coffee-loader" },
+      { test   : /\.(ttf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/, loader : 'file-loader' },
+      { test: /\.css$/, loader: "style-loader!css-loader" },
+      { test: /\.less$/, loader: "style!css!less" },
+      { test: /\.json$/, loader: "json-loader" }
     ]
   },
   externals: {

@@ -1,4 +1,9 @@
-var React = require("react")
+var React = require("react"),
+    $ = require("jquery"),
+    remote = require("remote"),
+    Menu = remote.require("menu"),
+    MenuItem = remote.require("menu-item")
+
 
 module.exports = React.createClass({
   getInitialState: function(){
@@ -11,19 +16,29 @@ module.exports = React.createClass({
     if(newProps.version) this.setState(_.extend({}, this.state, newProps.version));
   },
   render: function(){
-    console.log("heading render", this.state);
-    
     return(
-      <div id="heading">
-        <h1>Parity</h1>
-        <h3>Version</h3>
-        <p>
-          <span class="strong">UI:</span> {this.state.uiVersion}
-        </p>
-        <p class="version">
-          <span class="strong">Parity:</span> {this.state.clientVersion}
-        </p>
+      <div id="heading" className="toolbar toolbar-header">
+        <div className="toolbar-actions">
+          <button className="btn btn-default btn-dropdown pull-right" onClick={this.settingsClick}>
+            <span className="icon icon-cog"></span>
+          </button>
+        </div>
       </div>
     )
+  },
+  settingsClick: function(e){
+    var self = this;
+    e.preventDefault();
+
+    var menu = new Menu()
+    menu.append(new MenuItem({
+      label: "About",
+      click: function() {
+        // Trigger an alert when menu item is clicked
+        alert("Parity UI: " + self.state.uiVersion + "\nParity: " + self.state.clientVersion)
+      }
+    }))
+
+    menu.popup(remote.getCurrentWindow())
   }
 })
