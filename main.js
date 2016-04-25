@@ -7,7 +7,12 @@ var app = require('app'),
 parity.start();
 
 app.on('ready', function() {
-  mainWindow = new BrowserWindow({ height: 500, width: 700, frame: true });
+  mainWindow = new BrowserWindow({
+    height: 500,
+    width: 700,
+    frame: true,
+    titleBarStyle: 'hidden-inset'
+  });
   mainWindow.loadURL('file://' + __dirname + '/app/index.html');
   mainWindow.openDevTools();
   mainWindow.on('closed', function() {

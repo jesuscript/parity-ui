@@ -1,7 +1,8 @@
 var remote = require("remote"),
-    EventEmitter = require("events").EventEmitter,
+    async = require("async"),
     appDispatcher = require("./dispatcher/appDispatcher"),
     messages =  require("./constants/messages"),
+    _ = require("lodash"),
     parityMessages = require("./constants/parityMessages"),
     Web3 = require("web3")
 
@@ -18,31 +19,47 @@ var ParityProxy = function(){
 
   this.state = {
     currentBlock: 0,
-    highestBlock: 0,
-    running: this.parity.running,
+    running: false,
     syncing: false
   };
-  
-  
-  this.parity.on("running", (state) =>{
-    this.state.running = state
-    this.dispatch(parityMessages.CLIENT_STATE)
-  })
 
   this.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"))
 
-  this.web3.eth.isSyncing((err, sync) => {
-    this.state.syncing = !!sync
-    if(sync){
-      this.dispatch(parityMessages.CLIENT_STATE);
+  var checkClientStatus = () =>{
+    async.auto({
+      isRunning: (cb) =>{
+        return cb(null, this.web3.isConnected())
+      },
+      rpcData: ["isRunning",(res, cb) =>{
+        if(res.isRunning){
+          async.auto({
+            isSyncing: (cb) =>{
+              return this.web3.eth.getSyncing(cb)
+            },
+            currentBlock:(cb) => {
+              return this.web3.eth.getBlockNumber(cb)
+            }
+          },cb)
+        }else{
+          return cb(null)
+        }
+      }]
+    }, (err, res) =>{
+      if(err) throw err;
 
-      if(sync.currentBlock) this.state.currentBlock = sync.currentBlock
-      if(sync.highestBlock) this.state.highestBlock = sync.highestBlock
-    } 
-  })
+      _.extend(this.state, {
+        running: res.isRunning
+      }, res.rpcData)
+
+      this.dispatch(parityMessages.CLIENT_STATE)
+      setTimeout(checkClientStatus, 400)
+    })
+  }
+
+  checkClientStatus()
 }
 
-ParityProxy.prototype = _.extend({}, EventEmitter.prototype, {
+ParityProxy.prototype = {
   fetchVersion: function(cb){
     this.parity.fetchVersion(cb);
   },
@@ -52,6 +69,6 @@ ParityProxy.prototype = _.extend({}, EventEmitter.prototype, {
       action: _.extend({actionType}, action)
     })
   }
-})
+}
 
 module.exports = ParityProxy;

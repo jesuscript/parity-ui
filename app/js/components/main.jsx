@@ -25,7 +25,7 @@ var Main = React.createClass({
     return(
       <div className="window">
         <Heading version={this.state.parity.version}/>
-        <WindowContent/>
+        <WindowContent state={this.state}/>
         <Footer clientState={this.state.parity.clientState}
                 currentBlock={this.state.parity.currentBlock}
                 highestBlock={this.state.parity.highestBlock}
@@ -36,7 +36,6 @@ var Main = React.createClass({
   onChange: function(name, store, state){
     var newState = {}
     newState[name] = store.getState()
-
     this.setState(newState)
   }
 });

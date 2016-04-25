@@ -4,8 +4,6 @@ var webpack = require("webpack"),
 console.log(path.join(__dirname, 'node_modules'));
 
 module.exports = {
-  //context: __dirname + '/app',
-  //entry: './js/entry.js',
   entry: './app/js/entry.js',
   output: {
     filename: 'bundle.js',
@@ -38,6 +36,7 @@ module.exports = {
   },
   externals: {
     electron: 'require("electron")',
-    remote: 'require("remote")'
+    remote: 'require("remote")',
+    fs: 'require("fs")'
   }
 };

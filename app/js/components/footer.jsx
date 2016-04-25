@@ -7,37 +7,38 @@ module.exports = React.createClass({
   render: function(){
 
     var clientState = "Disconnected",
-        iconType = "icon-danger"
-    
+        statusName = "danger"
+
     if(this.props.clientState){
       ({
         "CLIENT_SYNCING": function(){
           clientState = "Syncing"
-          iconType = "icon-warning"
+          statusName = "warning"
         },
         "CLIENT_ACTIVE": function(){
           clientState = "Active"
-          iconType = "icon-success"
+          statusName = "success"
         },
         "CLIENT_DISCONNECTED": function(){
           clientState = "Disconnected"
-          iconType = "icon-danger"
+          statusName = "danger"
         }
       })[this.props.clientState]()
     }
 
-    
-    var iconClass = "icon icon-record pull-right icon-status " + iconType
-
-    var blocks = "#" + (this.props.currentBlock || 0)+ " / " +(this.props.highestBlock || 0)
+    var blocks = "#" + (this.props.currentBlock || 0)
           
+    var iconClass = `icon icon-record pull-right icon-status icon-${statusName}`,
+        clientStateClass= "title pull-right",
+        blockcountClass = "title pull-right blockcount"
+    
     return (
       <div id="footer" className="toolbar toolbar-footer ">
-        <p className="title pull-left">
+        <span className={iconClass}></span>
+        <p className={clientStateClass}>{clientState}</p>
+        <p className={blockcountClass}>
           {blocks}
         </p>
-        <span className={iconClass}></span>
-        <p className="title pull-right">{clientState}</p>
       </div>
     )
   }

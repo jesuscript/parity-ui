@@ -18,6 +18,7 @@ _.extend(AppDispatcher.prototype, Dispatcher.prototype, {
     })
   },
   dispatch: function(payload){
+    //console.log("dispatch", payload);
     if(!payload.source) throw new Error("Payload source not set!");
     if(payload.action && !payload.action.actionType){
       throw new Error("Payload "+payload.source+" action type not set!");
