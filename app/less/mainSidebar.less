@@ -1,10 +1,12 @@
 .main-sidebar{
   .nav-group-item, .nav-group-title{
     color: @color-default-text;
-
-    &.active, &.active .icon, &:active, &:active .icon{
-      color: @color-default-strong-text;
-      background-color: @color-default-strong;
-    }
+  }
+  .nav-group-item.active,
+  .nav-group-item.active .icon,
+  .nav-group-item:active,
+  .nav-group-item:active .icon {
+    color: @color-default-strong-text;
+    background-color: @color-default-strong;
   }
 }

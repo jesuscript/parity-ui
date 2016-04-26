@@ -4,16 +4,10 @@ var _ = require("lodash"),
 
 var messages = require("../constants/messages")
     
-function AppDispatcher(){
-  _.defaults(this,new Dispatcher())
-}
-
-util.inherits(AppDispatcher, Dispatcher)
-
-_.extend(AppDispatcher.prototype, Dispatcher.prototype, {
-  handleViewAction: function(action){
+module.exports = _.extend(new Dispatcher(), {
+  userAction: function(action){
     this.dispatch({
-      source: messages.VIEW_ACTION,
+      source: messages.USER_ACTION,
       action
     })
   },
@@ -28,6 +22,6 @@ _.extend(AppDispatcher.prototype, Dispatcher.prototype, {
   }
 })
 
-module.exports =  new AppDispatcher()
+
 
 

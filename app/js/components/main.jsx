@@ -5,37 +5,46 @@ var React = require('react'),
     remote = require("remote"),
     exec = remote.require("child_process").exec;
 
-var parityStore = require("../stores/parityStore"),
+var ethStore = require("../stores/ethStore"),
+    uiStore = require("../stores/uiStore"),
     Heading = require("./heading.jsx"),
     Footer = require("./footer.jsx"),
-    WindowContent = require("./windowContent.jsx")
+    MainContent = require("./mainContent.jsx")
 
 var Main = React.createClass({
   getInitialState: function(){
     return {
-      parity: {}
+      eth: {},
+      ui: {}
     }
   },
   componentDidMount: function() {
-    var onChange = this.onChange.bind(this, "parity", parityStore)
-    parityStore.addChangeListener(onChange)
-    parityStore.getState(onChange)
+    this.registerStore("eth", ethStore)
+    this.registerStore("ui", uiStore)
   },
   render: function(){
     return(
       <div className="window">
-        <Heading version={this.state.parity.version}/>
-        <WindowContent state={this.state}/>
-        <Footer clientState={this.state.parity.clientState}
-                currentBlock={this.state.parity.currentBlock}
-                highestBlock={this.state.parity.highestBlock}
+        <Heading version={this.state.eth.version}/>
+        <MainContent ui={this.state.ui} eth={this.state.eth}/>
+        <Footer clientState={this.state.eth.clientState}
+                currentBlock={this.state.eth.currentBlock}
+                highestBlock={this.state.eth.highestBlock}
                 />
       </div>
     ) 
   },
-  onChange: function(name, store, state){
+  registerStore: function(name, store){
+    store.addChangeListener(()=>{
+      this.onChange(name, store)
+    })
+    this.onChange(name,store)
+  },
+  onChange: function(name, store){
     var newState = {}
+    
     newState[name] = store.getState()
+
     this.setState(newState)
   }
 });

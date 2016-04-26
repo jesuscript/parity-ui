@@ -19,6 +19,14 @@ module.exports = React.createClass({
     return(
       <div id="heading" className="toolbar toolbar-header">
         <div className="toolbar-actions">
+          <div className="btn-group">
+            <button className="btn btn-default">
+              <span className="icon icon-left-open-big"></span>
+            </button>
+            <button className="btn btn-default" disabled>
+              <span className="icon icon-right-open-big"></span>
+            </button>
+          </div>
           <button className="btn btn-default btn-dropdown pull-right" onClick={this.settingsClick}>
             <span className="icon icon-cog"></span>
           </button>

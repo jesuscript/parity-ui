@@ -1,5 +1,3 @@
-console.log("entry");
-
 require("../css/photon.min.css")
 require("../less/main.less")
 

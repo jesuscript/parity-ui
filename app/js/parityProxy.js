@@ -3,7 +3,7 @@ var remote = require("remote"),
     appDispatcher = require("./dispatcher/appDispatcher"),
     messages =  require("./constants/messages"),
     _ = require("lodash"),
-    parityMessages = require("./constants/parityMessages"),
+    ethMessages = require("./constants/ethMessages"),
     Web3 = require("web3")
 
 
@@ -33,12 +33,27 @@ var ParityProxy = function(){
       rpcData: ["isRunning",(res, cb) =>{
         if(res.isRunning){
           async.auto({
-            isSyncing: (cb) =>{
+            syncing: (cb) =>{
               return this.web3.eth.getSyncing(cb)
             },
             currentBlock:(cb) => {
               return this.web3.eth.getBlockNumber(cb)
-            }
+            },
+            accounts: (cb) => {
+              return this.web3.eth.getAccounts(cb)
+            },
+            balances: ["accounts", (res, cb) => {
+              //TODO: replace with async.map + fetch balance
+              async.map(res.accounts, (account,cb)=>{
+                this.web3.eth.getBalance(account, (err, bal) => {
+                  cb(null, {
+                    address: account,
+                    balance: bal
+                  })
+                })
+              }, cb)
+              //async.map(res.accounts, this.web3.eth.getBalance, cb)
+            }]
           },cb)
         }else{
           return cb(null)
@@ -47,12 +62,15 @@ var ParityProxy = function(){
     }, (err, res) =>{
       if(err) throw err;
 
-      _.extend(this.state, {
-        running: res.isRunning
-      }, res.rpcData)
+      var syncing = res.rpcData.syncing
 
-      this.dispatch(parityMessages.CLIENT_STATE)
-      setTimeout(checkClientStatus, 400)
+      _.extend(this.state, res.rpcData, {
+        running: res.isRunning,
+        syncing: syncing && (syncing.currentBlock < syncing.highestBlock)
+      })
+
+      this.dispatch(ethMessages.CLIENT_STATE)
+      setTimeout(checkClientStatus, 500)
     })
   }
 

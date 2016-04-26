@@ -1,6 +1,6 @@
 const messages = require("./util").enumerate([
   "APP_ACTION",
-  "VIEW_ACTION",
+  "USER_ACTION",
   "PARITY_ACTION"
 ])
 

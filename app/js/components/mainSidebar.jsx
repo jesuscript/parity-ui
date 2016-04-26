@@ -2,23 +2,17 @@ var React = require("react"),
     _ = require("lodash")
 
 module.exports = React.createClass({
-  getInitialState: function(){
-    return {
-      activeItem: this.props.activeItem
-    }
-  },
-  _onItemClick: function(e){
+  _onItemClick: function(item, e){
     e.preventDefault()
-
-    this.props.onSelect();
+    this.props.onSelect(item);
   },
   render: function(){
     var menuItems = _.map(this.props.menuItems, (item) =>{
-      var className = `nav-group-item ${(this.state.activeItem == item.name) ? "active" : ""}`,
+      var className = `nav-group-item ${(this.props.activeItem == item.name) ? "active" : ""}`,
           iconClass = `icon icon-${item.icon} icon-default`
       
       return (
-        <a className={className} key={item.name} onClick={this._onItemClick}>
+        <a className={className} key={item.name} onClick={this._onItemClick.bind(this,item)}>
           <span className={iconClass}></span>
           {item.title}
         </a>

@@ -1,6 +1,5 @@
 var React = require("react"),
-    _ = require("lodash"),
-    parityMessages = require("../constants/parityMessages")
+    _ = require("lodash")
 
 
 module.exports = React.createClass({

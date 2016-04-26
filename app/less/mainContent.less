@@ -1,0 +1,62 @@
+.main-content{
+  span, label, th, td{
+    color: @color-default-strong-text;
+  }
+  .main-pane-container{
+    padding: 20px 30px;
+    table{
+      th{
+        font-size: 18px;
+      }
+      td{
+        font-size: 15px;
+      }
+      thead, tbody{
+        &, tr{
+          background-color: transparent;
+        }
+        th, td{
+          border-color: @color-default-xlight;
+          border-right: none;
+        }
+      }
+      tr:not(:last-child) td{
+        border-bottom: 1px solid @color-default-light;
+      }
+
+    }
+  }
+  form{
+    .cells{
+      display: table;
+      width: 100%;
+      .form-group{
+        display: table-row;
+      }
+      label, .form-control{
+        margin-bottom: 20px;
+        display: table-cell;
+      }
+      select{
+        height: 32px;
+      }
+      label{
+        text-align: right;
+        vertical-align: top;
+        font-size: 16px;
+        width: 15%;
+        padding-right:20px;
+      }
+      input, textarea, select{
+        background-color: @color-default;
+        color: @color-default-text;
+        border-color: @color-default-text;
+      }
+    }
+    input[type=submit]{
+      display: block;
+      width: 200px;
+      float: right;
+    }
+  }
+}

@@ -45,6 +45,7 @@
     "less": "^2.6.1",
     "less-loader": "^2.2.3",
     "lodash": "^4.11.1",
+    "numeral": "^1.5.3",
     "objects": "^0.3.0",
     "react": "^15.0.1",
     "react-dom": "^15.0.1",
