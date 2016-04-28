@@ -37,11 +37,13 @@
     "coffee-script": "^1.10.0",
     "deep-diff": "^0.3.3",
     "events": "^1.1.0",
+    "expand-home-dir": "0.0.3",
     "flux": "^2.1.1",
     "immutable": "^3.8.1",
     "immutable-diff": "^0.1.1",
     "jquery": "^2.2.3",
     "json-loader": "^0.5.4",
+    "keythereum": "^0.2.6",
     "less": "^2.6.1",
     "less-loader": "^2.2.3",
     "lodash": "^4.11.1",
@@ -51,6 +53,7 @@
     "react-dom": "^15.0.1",
     "titlebar": "^1.4.0",
     "util": "^0.10.3",
-    "web3": "^0.15.3"
+    "web3": "^0.15.3",
+    "web3-raw-provider": "^0.0.4"
   }
 }

@@ -12,7 +12,7 @@ module.exports = React.createClass({
           iconClass = `icon icon-${item.icon} icon-default`
       
       return (
-        <a className={className} key={item.name} onClick={this._onItemClick.bind(this,item)}>
+        <a className={className} key={item.name} onClick={this._onItemClick.bind(this,item.name)}>
           <span className={iconClass}></span>
           {item.title}
         </a>

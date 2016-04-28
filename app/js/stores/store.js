@@ -1,11 +1,15 @@
 var _ = require("lodash"),
-    EventEmitter = require("events").EventEmitter
+    fs = require("fs"),
+    EventEmitter = require("events").EventEmitter,
+    remote = require("remote"),
+    stateStorage = remote.require("./lib/stateStorage")
 
 var appDispatcher = require("../dispatcher/appDispatcher")
 
 var CHANGE_EVENT = "parity-state-change"
 
 var Store = function(){
+  if(!this.storeName) throw new Error("A store must have a name!")
   var listenMap = {}
 
   _.each(this.listen, (event) => {
@@ -20,11 +24,13 @@ var Store = function(){
 
     //console.log(this.listen);
 
-    if(handler) handler.call(this, payload,this.emitChanges.bind(this))
+    if(handler) handler.call(this, payload)
   })
 }
 
 _.extend(Store.prototype, EventEmitter.prototype, {
+  storeName: "store",
+  _state: {},
   listen: [],
   getState: function(cb){
     return _.cloneDeep(this._state)
@@ -34,7 +40,7 @@ _.extend(Store.prototype, EventEmitter.prototype, {
     this.emitChanges();
   },
   updateState: function(changes){
-    this.setState(_.merge({}, this._state, changes))
+    this.setState(_.extend({}, this._state, changes))
   },
   emitChanges: _.debounce(function(){
     this.emit(CHANGE_EVENT)
@@ -44,8 +50,17 @@ _.extend(Store.prototype, EventEmitter.prototype, {
   },
   removeChangeListener: function(cb){
     this.removeListener(CHANGE_EVENT, cb)
+  },
+  saveState: function(cb){
+    console.log("save state", this._state);
+    stateStorage.save(this.storeName, this._state, cb)
+  },
+  loadState: function(cb){
+    console.log("load state");
+    stateStorage.load(this.storeName, (err,state) => {
+      if(cb) cb(err, state)
+    })
   }
 })
-
 
 module.exports = Store

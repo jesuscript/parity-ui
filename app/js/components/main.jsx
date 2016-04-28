@@ -25,7 +25,7 @@ var Main = React.createClass({
   render: function(){
     return(
       <div className="window">
-        <Heading version={this.state.eth.version}/>
+        <Heading version={this.state.eth.version} ui={this.state.ui}/>
         <MainContent ui={this.state.ui} eth={this.state.eth}/>
         <Footer clientState={this.state.eth.clientState}
                 currentBlock={this.state.eth.currentBlock}
@@ -42,7 +42,7 @@ var Main = React.createClass({
   },
   onChange: function(name, store){
     var newState = {}
-    
+
     newState[name] = store.getState()
 
     this.setState(newState)

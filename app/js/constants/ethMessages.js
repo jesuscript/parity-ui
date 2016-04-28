@@ -1,3 +1,4 @@
 module.exports = require("./util").enumerate([
-  "CLIENT_STATE"
+  "CLIENT_STATE",
+  "TX_SENT"
 ])

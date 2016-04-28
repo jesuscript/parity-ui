@@ -1,0 +1,15 @@
+* TODO move stores and dispatcher into the main process to avoid race conditions
+* DONE back/forward for contexts
+  CLOSED: [2016-04-28 Thu 01:06]
+* DONE view transaction list
+  CLOSED: [2016-04-27 Wed 22:47]
+* DONE view transaction
+  CLOSED: [2016-04-27 Wed 19:29]
+* TODO blocks
+* TODO save states on exit
+* TODO componentStore: persistent component state
+* TODO tx password dialog
+* TODO unlocking accounts
+* TODO error management in ethStore
+* TODO save state in binary form instead of JSON
+* TODO ImmutableJS for immutable states

@@ -11,6 +11,12 @@ module.exports = _.extend(new Dispatcher(), {
       action
     })
   },
+  appAction: function(action){
+    this.dispatch({
+      source: messages.APP_ACTION,
+      action
+    })
+  },
   dispatch: function(payload){
     //console.log("dispatch", payload);
     if(!payload.source) throw new Error("Payload source not set!");

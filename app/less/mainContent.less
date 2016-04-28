@@ -1,6 +1,16 @@
 .main-content{
-  span, label, th, td{
+  span, label, th, td, h1, h2, h3, h4, h5, p{
     color: @color-default-strong-text;
+    &.text-danger{
+      color: @color-danger-text;
+    }
+    &.text-warning{
+      color: @color-warning-text;
+    }
+    &.text-success{
+      color: @color-success-text;
+    }
+    
   }
   .main-pane-container{
     padding: 20px 30px;
@@ -9,7 +19,7 @@
         font-size: 18px;
       }
       td{
-        font-size: 15px;
+        font-size: 12px;
       }
       thead, tbody{
         &, tr{
@@ -23,7 +33,12 @@
       tr:not(:last-child) td{
         border-bottom: 1px solid @color-default-light;
       }
-
+      .clickable:hover{
+        background-color: @color-default-xstrong;
+        td{
+          color: @color-default-xstrong-text;
+        }
+      }
     }
   }
   form{

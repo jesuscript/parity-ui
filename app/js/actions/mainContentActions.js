@@ -3,10 +3,11 @@ var appDispatcher = require("../dispatcher/appDispatcher"),
 
 
 module.exports = {
-  setContext: function(name){
+  setContext: function(context, scope){
     appDispatcher.userAction({
       actionType: uiMessages.SET_CONTEXT,
-      name
+      context,
+      scope
     })
   },
   sendTx: function(tx){
@@ -14,5 +15,17 @@ module.exports = {
       actionType: uiMessages.SEND_TX,
       tx
     })
+  },
+  moveContextBack: function(){
+    appDispatcher.userAction({
+      actionType: uiMessages.MOVE_CONTEXT_BACK
+    })
+    
+  },
+  moveContextForward: function(){
+    appDispatcher.userAction({
+      actionType: uiMessages.MOVE_CONTEXT_FORWARD
+    })
+    
   }
 }

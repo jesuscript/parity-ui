@@ -1,10 +1,12 @@
 var React = require("react"),
+    Web3 = require("web3"),
     _ = require("lodash")
 
 module.exports = React.createClass({
   getInitialState: function(){
     return {
-      gas: this.props.defaultGas,
+      //TODO: make default gas a config option
+      gas: 90000,
       from: "",
       to: "",
       value: 0,
@@ -40,12 +42,18 @@ module.exports = React.createClass({
           </div>
           <div className="form-group">
             <label>&#926; Value</label>
-            <input type="number" className="form-control" name="value" value={this.state.value}
+            <input type="number" step="any"
+                   className="form-control"
+                   name="value"
+                   value={this.state.value}
                    onChange={this.onChange.bind(this, "value")}/>
           </div>
           <div className="form-group">
             <label>Gas</label>
-            <input type="number" className="form-control" name="gas" value={this.state.gas}
+            <input type="number"
+                   className="form-control"
+                   name="gas"
+                   value={this.state.gas}
                    onChange={this.onChange.bind(this,"gas")}/>
           </div>
           <div className="form-group">
@@ -61,7 +69,11 @@ module.exports = React.createClass({
   onSubmit: function(e){
     e.preventDefault()
 
-    this.props.onSend(this.state);
+    var tx = _.cloneDeep(this.state)
+
+    tx.value = Web3.prototype.toWei(tx.value, "ether")
+
+    this.props.onSend(tx)
   },
   onChange: function(name, e){
     e.preventDefault()
@@ -69,8 +81,6 @@ module.exports = React.createClass({
     var state = {}
 
     state[name] = e.target.value
-
-    console.log("change",name, e.target.value);
 
     this.setState(state)
   }
