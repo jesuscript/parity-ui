@@ -8,6 +8,7 @@ var React = require('react'),
 var ethStore = require("../stores/ethStore"),
     uiStore = require("../stores/uiStore"),
     Heading = require("./heading.jsx"),
+    ErrorNotification = require("./errorNotification.jsx"),
     Footer = require("./footer.jsx"),
     MainContent = require("./mainContent.jsx")
 
@@ -26,6 +27,7 @@ var Main = React.createClass({
     return(
       <div className="window">
         <Heading version={this.state.eth.version} ui={this.state.ui}/>
+        <ErrorNotification/>
         <MainContent ui={this.state.ui} eth={this.state.eth}/>
         <Footer clientState={this.state.eth.clientState}
                 currentBlock={this.state.eth.currentBlock}

@@ -10,6 +10,8 @@
 * TODO componentStore: persistent component state
 * TODO tx password dialog
 * TODO unlocking accounts
-* TODO error management in ethStore
+* TODO Tx send error notification
 * TODO save state in binary form instead of JSON
 * TODO ImmutableJS for immutable states
+* TODO fix the "failed to load" bug
+* TODO async isConnected check

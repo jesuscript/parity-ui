@@ -82,10 +82,12 @@ uiStore.setState({
   contextHistory: [],
   contextIndex: -1,
   contexts: [
-    {title: "Accounts", name: uiConstants.CONTEXT_ITEM_ACCOUNTS, icon: "users"},
-    {title: "Send", name: uiConstants.CONTEXT_ITEM_SEND_TX, icon: "mail"},
-    {title: "Transactions", name: uiConstants.CONTEXT_ITEM_TXS, icon: "book"},
-    {title: "Blocks", name: uiConstants.CONTEXT_ITEM_BLOCKS, icon: "stop"}
+    {title: "Accounts", name: uiConstants.CONTEXT_ITEM_ACCOUNTS, icon: "users", type: "main"},
+    {title: "Send", name: uiConstants.CONTEXT_ITEM_SEND_TX, icon: "mail", type: "main"},
+    {title: "Transactions", name: uiConstants.CONTEXT_ITEM_TXS, icon: "book", type: "main"},
+    {title: "Blocks", name: uiConstants.CONTEXT_ITEM_BLOCKS, icon: "stop", type: "main"},
+    //experimental
+    {title: "Google", name: uiConstants.CONTEXT_ITEM_GOOGLE, icon: "publish", type: "plugin"}
   ]
 })
 

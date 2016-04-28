@@ -33,6 +33,11 @@ module.exports = React.createClass({
         }
 
         return txView;
+      },
+      "CONTEXT_ITEM_GOOGLE": () => {
+        return (
+          <webview className="plugin-view" src="https://google.com" width="500px"></webview>
+        )
       }
     })[this.props.ui.activeContext] || function(){
       //default
