@@ -6,6 +6,8 @@
   @import "mainSidebar.less";
   @import "mainContent.less";
   @import "errorNotification.less";
+  @import "passwordNotification.less";
+
   .icon{
     &.icon-danger{
       color: @color-danger;
@@ -30,7 +32,43 @@
   .text-success{
     color: @color-success-text;
   }
-  
+
+  a:active,
+  a:hover{
+    text-decoration: none;
+  }
+
+  .toolbar-notification{
+    p, .icon, span{
+      margin: 0;
+      line-height: 24px;
+      height: 24px;
+      display: inline-block;
+    }
+    p, span{
+      font-size: 12px;
+    }
+    .icon{
+      font-size: 14px;  
+    }
+
+    padding: 5px 20px;
+  }
+
+  .toolbar input,
+  .toolbar-notification input {
+    height: 24px;
+    vertical-align: middle;
+    border-radius: 4px;
+    border: none;
+    background-color: @color-default-xstrong-text;
+    color: @color-default-xstrong;
+    margin: 0 20px;
+    width: 250px;
+    padding: 0 10px;
+    min-height: 0px;
+  }
+
 }
 
 

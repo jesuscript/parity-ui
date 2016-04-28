@@ -3,12 +3,28 @@ var React = require("react"),
     numeral = require("numeral"),
     _ = require("lodash")
 
+var appActions = require("../actions/appActions")
+
 module.exports = React.createClass({
   render: function(){
-    var balanceList = _.map(this.props.balances, function(account){
+    var balanceList = _.map(this.props.balances, (account) => {
       var balance = numeral(
         Web3.prototype.fromWei(account.balance, "ether").toString()
       ).format("0,0.[0000]")
+
+      var lockButton = this.props.passwords[account.address] ? (
+        <button className="btn btn-default-strong"
+                onClick={this._onLockClick.bind(this, "lock", account.address)}>
+          <span className="icon icon-lock-open icon-initial-state icon-danger"></span>
+          <span className="icon icon-lock icon-hover-state icon-success"></span>
+        </button>
+      ) : (
+        <button className="btn btn-default-strong"
+                onClick={this._onLockClick.bind(this, "unlock", account.address)}>
+          <span className="icon icon-lock icon-initial-state icon-success"></span>
+          <span className="icon icon-lock-open icon-hover-state icon-danger"></span>
+        </button>
+      )
 
       return(
         <tr key={account.address}>
@@ -19,10 +35,7 @@ module.exports = React.createClass({
             &#926; {balance}
           </td>
           <td>
-            <button className="btn btn-default-strong">
-              <span className="icon icon-lock icon-initial-state icon-success"></span>
-              <span className="icon icon-lock-open icon-hover-state icon-danger"></span>
-            </button>
+            {lockButton}
           </td>
         </tr>
       )
@@ -44,5 +57,10 @@ module.exports = React.createClass({
         </table>
       </div>
     )
+  },
+  _onLockClick: function(type, address, e){
+    e.preventDefault()
+
+    appActions[(type === "unlock") ? "unlockAccount" : "lockAccount"](address)
   }
 })

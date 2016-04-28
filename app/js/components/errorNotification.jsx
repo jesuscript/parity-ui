@@ -4,7 +4,7 @@ module.exports = React.createClass({
   render: function(){
     if(this.props.error){
       return (
-        <div className="error-notification">
+        <div className="error-notification toolbar-notification">
           <p className="pull-left">
             Oops! Something went wrong
           </p>

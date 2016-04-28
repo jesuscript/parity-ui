@@ -26,6 +26,28 @@ module.exports = {
     appDispatcher.userAction({
       actionType: uiMessages.MOVE_CONTEXT_FORWARD
     })
-    
+  },
+  submitPassword: function(password){
+    appDispatcher.userAction({
+      actionType: uiMessages.SUBMIT_PASSWORD,
+      password
+    })
+  },
+  dismissTx: function(tx){
+    appDispatcher.userAction({
+      actionType: uiMessages.DISMISS_TX
+    })
+  },
+  unlockAccount: function(address){
+    appDispatcher.userAction({
+      actionType: uiMessages.UNLOCK_ACCOUNT,
+      address
+    })
+  },
+  lockAccount: function(address){
+    appDispatcher.userAction({
+      actionType: uiMessages.LOCK_ACCOUNT,
+      address
+    })
   }
 }

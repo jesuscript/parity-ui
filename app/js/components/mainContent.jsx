@@ -18,7 +18,7 @@ module.exports = React.createClass({
     var currentPane = (({
       "CONTEXT_ITEM_ACCOUNTS": () => {
         return (
-         <AccountsOverview balances={this.props.eth.balances}/> 
+          <AccountsOverview balances={this.props.eth.balances} passwords={this.props.eth.passwords}/> 
         )
       }, 
       "CONTEXT_ITEM_SEND_TX": () => {

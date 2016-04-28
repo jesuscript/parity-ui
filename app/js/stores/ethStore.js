@@ -37,7 +37,14 @@ var EthStore = function(){
 
         this.setState(_.extend({
           defaultGas: 90000,
-          passwords
+          pendingTxs: [
+            //DEBUG
+            // {
+            //   from: "0xba5587f8469f9f9a8ea9d49514241ff3a89f26c3",
+            //   to: "0xba5587f8469f9f9a8ea9d49514241ff3a89f26c3",
+            //   value: 100000
+            // }
+          ]
         }, state))
 
         cb()
@@ -67,7 +74,7 @@ _.extend(EthStore.prototype, Store.prototype, {
     source: messages.PARITY_ACTION,
     actions: [{
       actionType: ethMessages.CLIENT_STATE,
-      handler: function(payload, cb){
+      handler: function(payload){
         this._processClientState()
       }
     }]
@@ -75,52 +82,88 @@ _.extend(EthStore.prototype, Store.prototype, {
     source: messages.USER_ACTION,
     actions: [{
       actionType: uiMessages.SEND_TX,
-      handler: function(payload, cb){
+      handler: function(payload){
         var state = this.getState(),
             password = state.passwords[payload.action.tx.from]
         
         if(password){
-          this._parityProxy.sendTx(payload.action.tx, password, (error, txHash) => {
-            if(error){
-              this.setState({error})
-            } else {
-              this._parityProxy.watchTx(txHash)
-
-              //TODO: replace all this trash with state save on exit
-              var transactions = this.getState().transactions
-
-              transactions[txHash] = null
-              
-              this.updateState({transactions})
-              this.saveState()
-              // /trash
-
-              appDispatcher.dispatch({
-                source: messages.ETH_ACTION,
-                action:{
-                  actionType: ethMessages.TX_SENT,
-                  txHash
-                }
-              })
-            }
-          })
+          this._sendTransaction(payload.action.tx, password)
         }else{
-          if(!state.pendingTx){
-            this.setState({
-              pendingTx: payload.action.tx
-            })
-          }else{
-            this.setState({
-              error: {
-                msg: "Attempted to replace an existing pending transaction!",
-                tx: payload.action.tx
-              }
-            })
-          }
+          state.pendingTxs.push(payload.action.tx)
+          this.updateState({
+            pendingTxs: state.pendingTxs
+          })
         }
       }
-    }]    
+    }, {
+      actionType: uiMessages.SUBMIT_PASSWORD,
+      handler: function(payload){
+        var password = payload.action.password,
+            state = this.getState(),
+            pendingTxs = state.pendingTxs,
+            tx = pendingTxs.shift(1)
+
+        if(tx){
+          this._sendTransaction(tx, password)
+          this.updateState({pendingTxs})
+        }else if(state.accountToUnlock){
+          state.passwords[state.accountToUnlock] = password
+          this.updateState({
+            passwords: state.passwords,
+            accountToUnlock: undefined
+          })
+        }
+      }
+    },{
+      actionType: uiMessages.DISMISS_TX,
+      handler: function(payload){
+        this.updateState({pendingTxs: this.getState().pendingTxs.slice(1)})
+      }
+    },{
+      actionType: uiMessages.LOCK_ACCOUNT,
+      handler: function(payload){
+        var passwords = this.getState().passwords
+
+        passwords[payload.action.address] = undefined
+
+        console.log("lock", payload.action.address, passwords);
+        this.updateState({passwords})
+      }
+    },{
+      actionType: uiMessages.UNLOCK_ACCOUNT,
+      handler: function(payload){
+        this.updateState({
+          accountToUnlock: payload.action.address
+        })
+      }
+    }]
   }],
+  _sendTransaction: function(tx, password){
+    this._parityProxy.sendTx(tx, password, (error, txHash) => {
+      if(error){
+        this.updateState({error})
+      } else {
+        this._parityProxy.watchTx(txHash)
+
+        //TODO: replace all this trash with state save on exit
+        var transactions = this.getState().transactions
+
+        transactions[txHash] = null
+        
+        this.updateState({transactions})
+        this.saveState()
+        // /trash
+
+        appDispatcher.dispatch({
+          source: messages.ETH_ACTION,
+          action:{
+            actionType: ethMessages.TX_SENT,
+            txHash
+          }
+        })
+      }
+    })
+  },
   _processClientState: function(){
     let state = this._parityProxy.state
     //console.log("CLIENT STATE", state);
