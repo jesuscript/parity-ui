@@ -8,6 +8,8 @@ var Store = require("./store"),
     messages = require("../constants/messages"),
     ethConstants = require("../constants/ethConstants"),
     uiMessages = require("../constants/uiMessages"),
+    uiConstants = require("../constants/uiConstants"),
+    appActions = require("../actions/appActions"),
     ParityProxy = require("../parityProxy"),
     appDispatcher = require("../dispatcher/appDispatcher");
 
@@ -131,8 +133,28 @@ _.extend(EthStore.prototype, Store.prototype, {
     }
 
     if(state.running){
+      this._notifyNewConfirmedTx(state)
       this.updateState(state)
     }
+  },
+  _notifyNewConfirmedTx: function(parityState){
+    var state = this.getState()
+    
+    _.each(state.transactions, function(tx){
+      if(tx){
+        var newTxState = parityState.transactions[tx.hash]
+        
+        if(newTxState && !tx.blockNumber && newTxState.blockNumber){
+          var notification = new Notification("Transaction confirmed", {
+            body: tx.hash
+          })
+
+          notification.onclick = function(){
+            appActions.setContext(uiConstants.CONTEXT_ITEM_TXS, tx.hash)
+          }
+        }
+      }
+    })
   }
 })
 

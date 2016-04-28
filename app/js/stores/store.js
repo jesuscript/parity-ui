@@ -52,11 +52,9 @@ _.extend(Store.prototype, EventEmitter.prototype, {
     this.removeListener(CHANGE_EVENT, cb)
   },
   saveState: function(cb){
-    console.log("save state", this._state);
     stateStorage.save(this.storeName, this._state, cb)
   },
   loadState: function(cb){
-    console.log("load state");
     stateStorage.load(this.storeName, (err,state) => {
       if(cb) cb(err, state)
     })

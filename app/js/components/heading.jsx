@@ -5,7 +5,7 @@ var React = require("react"),
     Menu = remote.require("menu"),
     MenuItem = remote.require("menu-item")
 
-var mainContentActions = require("../actions/mainContentActions")
+var appActions = require("../actions/appActions")
 
 module.exports = React.createClass({
   getInitialState: function(){
@@ -64,9 +64,9 @@ module.exports = React.createClass({
     menu.popup(remote.getCurrentWindow())
   },
   _backClick: function(e){
-    mainContentActions.moveContextBack()
+    appActions.moveContextBack()
   },
   _forwardClick: function(e){
-    mainContentActions.moveContextForward()
+    appActions.moveContextForward()
   }
 })

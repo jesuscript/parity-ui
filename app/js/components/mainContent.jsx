@@ -6,7 +6,7 @@ var MainSidebar = require("./mainSidebar.jsx"),
     TxDetails = require("./txDetails.jsx"),
     TxsOverview = require("./txsOverview.jsx"),
     uiConstants = require("../constants/uiConstants"),
-    mainContentActions = require("../actions/mainContentActions")
+    appActions = require("../actions/appActions")
 
 
 module.exports = React.createClass({
@@ -50,9 +50,9 @@ module.exports = React.createClass({
     )
   },
   _onContextSelect: function(context, scope){
-    mainContentActions.setContext(context, scope)
+    appActions.setContext(context, scope)
   },
   _onTxSend: function(data){
-    mainContentActions.sendTx(data)
+    appActions.sendTx(data)
   }
 })
