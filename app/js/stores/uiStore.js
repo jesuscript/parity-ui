@@ -87,11 +87,22 @@ uiStore.setState({
     {title: "Transactions", name: uiConstants.CONTEXT_ITEM_TXS, icon: "book", type: "main"},
     {title: "Blocks", name: uiConstants.CONTEXT_ITEM_BLOCKS, icon: "stop", type: "main"},
     //experimental
-    {title: "Google", name: uiConstants.CONTEXT_ITEM_GOOGLE, icon: "publish", type: "plugin"}
+    {
+      title: "Web",
+      name: uiConstants.CONTEXT_ITEM_PLUGIN_WEB,
+      icon: "globe",
+      type: "plugin"
+    },
+    {
+      title: "Solidity",
+      name: uiConstants.CONTEXT_ITEM_PLUGIN_SOLIDITY,
+      icon: "doc-text",
+      type: "plugin"
+    }
   ]
 })
 
-uiStore.setContext(uiConstants.CONTEXT_ITEM_TXS)
+uiStore.setContext(uiConstants.CONTEXT_ITEM_ACCOUNTS)
 
 
 module.exports = uiStore

@@ -8,12 +8,12 @@ module.exports = React.createClass({
   },
   render: function(){
     var buildItems = (items) =>{
-      return _.map(items, (item) =>{
+      return _.map(items, (item,i) =>{
         var className = `nav-group-item ${(this.props.activeItem == item.name) ? "active" : ""}`,
             iconClass = `icon icon-${item.icon} icon-default`
 
         return (
-          <a className={className} key={item.name} onClick={this._onItemClick.bind(this,item.name)}>
+          <a className={className} key={i} onClick={this._onItemClick.bind(this,item.name)}>
             <span className={iconClass}></span>
             {item.title}
           </a>

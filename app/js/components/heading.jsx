@@ -41,6 +41,7 @@ module.exports = React.createClass({
             </button>
           </div>
           <input type="text" className="search" placeholder="Search"/>
+          
           <button className="btn btn-default btn-dropdown pull-right" onClick={this._settingsClick}>
             <span className="icon icon-cog"></span>
           </button>
