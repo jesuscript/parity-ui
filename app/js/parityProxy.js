@@ -9,7 +9,7 @@ var remote = require("remote"),
     ethMessages = require("./constants/ethMessages"),
     Web3 = require("web3"),
     RawProvider = require("web3-raw-provider")
-
+    
 
 
 /*
@@ -30,7 +30,11 @@ var ParityProxy = function(){
 
   this.watchedTxs = []
 
-  this.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"))
+
+  this.web3 = new Web3(new Web3.providers.HttpProvider(
+    `http://localhost:${this.parity.opt.rpcPort}`
+  ))
+
 }
 
 ParityProxy.prototype = {
@@ -77,7 +81,7 @@ ParityProxy.prototype = {
         var address = tx.from.substr(2),
             senderKey = _.find(res, {address}),
             pk = keythereum.recover(password, senderKey),
-            web3 = new Web3(new RawProvider("http://localhost:8545", pk))
+            web3 = new Web3(new RawProvider("http://localhost:"+this.parity.opt.rpcPort, pk))
 
         tx.gasPrice = this.state.gasPrice.toString();
         web3.eth.sendTransaction(tx, cb)

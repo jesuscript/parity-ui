@@ -126,7 +126,6 @@ _.extend(EthStore.prototype, Store.prototype, {
 
         passwords[payload.action.address] = undefined
 
-        console.log("lock", payload.action.address, passwords);
         this.updateState({passwords})
       }
     },{
