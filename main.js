@@ -2,22 +2,15 @@
 var app = require('app'),
     expandHomeDir = require('expand-home-dir'),
     BrowserWindow = require('browser-window'),
-    parity = require("./lib/parity"),
-    stateStorage = require("./lib/stateStorage"),
-    path = require("path"),
-    fs = require("fs"),
-    mainWindow = null
+    path = require("path")
 
-var appDatadir = path.join(process.env.HOME, ".parity-ui"),
-    parityDatadir = path.join(process.env.HOME, ".parity")
+require('electron-reload')(path.join(__dirname, "lib"));
 
-if(!fs.existsSync(appDatadir)) fs.mkdirSync(appDatadir)
+var stores = require("./lib/stores")
 
-stateStorage.start(appDatadir)
-parity.start({datadir:parityDatadir});
 
 app.on('ready', function() {
-  mainWindow = new BrowserWindow({
+  var mainWindow = new BrowserWindow({
     height: 500,
     width: 850,
     frame: true,
@@ -35,8 +28,5 @@ ipc.on('close-main-window', function () {
   app.quit();
 });
 
-process.on('exit', function(){
-  parity.terminate();
-});
 
 

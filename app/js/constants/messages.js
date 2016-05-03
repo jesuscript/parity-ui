@@ -1,9 +1,14 @@
-const messages = require("./util").enumerate([
+module.exports = require("./util").enumerate([
   "APP_ACTION",
   "USER_ACTION",
-  "PARITY_ACTION",
-  "ETH_ACTION"
+  "ETHEREUM_CLIENT_ACTION",
+  "ETH_ACTION",
+  "ETH_STORE_CHANGE",
+  "UI_STORE_CHANGE",
+  "ETH_STORE_GET_STATE",
+  "UI_STORE_GET_STATE",
+  "DISPATCHER_MESSAGE"
 ])
 
 
-module.exports = messages
+

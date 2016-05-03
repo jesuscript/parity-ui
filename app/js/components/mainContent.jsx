@@ -11,10 +11,6 @@ var MainSidebar = require("./mainSidebar.jsx"),
 
 module.exports = React.createClass({
   render: function(){
-    var renderPlugin = function(src){
-      return (<webview className="plugin-view" src={src}></webview>)
-    }
-    
     var currentPane = (({
       "CONTEXT_ITEM_ACCOUNTS": () => {
         return (
@@ -37,12 +33,6 @@ module.exports = React.createClass({
         }
 
         return txView;
-      },
-      "CONTEXT_ITEM_PLUGIN_WEB": () => {
-        return renderPlugin("https://google.com")
-      },
-      "CONTEXT_ITEM_PLUGIN_SOLIDITY": () => {
-        return renderPlugin("http://chriseth.github.io/browser-solidity/")
       }
     })[this.props.ui.activeContext] || function(){
       //default

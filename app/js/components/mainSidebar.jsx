@@ -20,18 +20,13 @@ module.exports = React.createClass({
         )
       }) 
     }
-    var mainItems = buildItems(_.filter(this.props.menuItems, {type: "main"})),
-        pluginItems = buildItems(_.filter(this.props.menuItems, {type: "plugin"}))
+    var mainItems = buildItems(_.filter(this.props.menuItems, {type: "main"}))
     
     return (
       <div className="main-sidebar pane-sm sidebar">
         <h5 className="nav-group-title">Main</h5>
         <nav className="nav-group">
           {mainItems}
-        </nav>
-        <h5 className="nav-group-title">Plugins</h5>
-        <nav className="nav-group">
-          {pluginItems}
         </nav>
       </div>
     )

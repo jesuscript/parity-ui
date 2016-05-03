@@ -5,8 +5,7 @@ var React = require('react'),
     remote = require("remote"),
     exec = remote.require("child_process").exec;
 
-var ethStore = require("../stores/ethStore"),
-    uiStore = require("../stores/uiStore"),
+var StoreProxy = require("../storeProxy"),
     Heading = require("./heading.jsx"),
     ErrorNotification = require("./errorNotification.jsx"),
     PasswordNotification = require("./passwordNotification.jsx"),
@@ -21,8 +20,8 @@ var Main = React.createClass({
     }
   },
   componentDidMount: function() {
-    this.registerStore("eth", ethStore)
-    this.registerStore("ui", uiStore)
+    this.registerStore("eth")
+    this.registerStore("ui")
   },
   render: function(){
     return(
@@ -39,16 +38,19 @@ var Main = React.createClass({
       </div>
     ) 
   },
-  registerStore: function(name, store){
+  registerStore: function(name){
+    var store = new StoreProxy(name)
+    
     store.addChangeListener(()=>{
       this.onChange(name, store)
     })
-    this.onChange(name,store)
+    
+    if(store.state) this.onChange(name,store)
   },
   onChange: function(name, store){
     var newState = {}
 
-    newState[name] = store.getState()
+    newState[name] = store.state
 
     this.setState(newState)
   }
