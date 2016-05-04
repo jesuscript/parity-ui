@@ -31,7 +31,7 @@ var Main = React.createClass({
         <Heading version={this.state.eth.version} ui={this.state.ui}/>
         <ErrorNotification/>
         <MainContent ui={this.state.ui} eth={this.state.eth}/>
-        <PasswordNotification tx={(this.state.eth.pendingTxs || [])[0]}
+        <PasswordNotification tx={ ((this.state.eth.pendingTxs || [])[0] || {}).tx }
                               account={this.state.eth.accountToUnlock} />
         <Footer clientState={this.state.eth.clientState}
                 currentBlock={this.state.eth.currentBlock}

@@ -27,11 +27,17 @@ module.exports = {
       actionType: uiMessages.MOVE_CONTEXT_FORWARD
     })
   },
-  submitPassword: function(password){
-    appDispatcher.userAction({
-      actionType: uiMessages.SUBMIT_PASSWORD,
+  submitPassword: function(password, mode, data){
+    var payload = {
+      actionType: (mode === "tx") ?
+        uiMessages.SUBMIT_PASSWORD_TX :
+        uiMessages.SUBMIT_PASSWORD_UNLOCK,
       password
-    })
+    }
+
+    payload[mode] = data
+    
+    appDispatcher.userAction(payload)
   },
   dismissTx: function(tx){
     appDispatcher.userAction({

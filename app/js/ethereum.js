@@ -67,25 +67,41 @@ module.exports = class Ethereum {
       action: _.extend({actionType}, action)
     })
   }
-  sendTx(tx, password, cb){
-    var keypath = path.join(this.client.opt.datadir, "keys")
+  sendTx(){
+    var tx = arguments[0],
+        cb = function(){},
+        password
+        
     
-    fs.readdir(keypath,(err, keyfiles) =>{
-      if(err) throw(err)
-      async.map(keyfiles, function(file,cb){
-        fs.readFile(path.join(keypath, file),function(e,r){
-          cb(e, JSON.parse(r.toString()))
-        })
-      }, (err,res) => {
-        var address = tx.from.substr(2),
-            senderKey = _.find(res, {address}),
-            pk = keythereum.recover(password, senderKey),
-            web3 = new Web3(new RawProvider("http://localhost:"+this.rpcPort, pk))
+    if(arguments.length === 3){
+      password = arguments[1]
+      cb = arguments[2]
+    }else if(arguments.length === 2){
+      cb = arguments[1]
+    }
 
-        tx.gasPrice = this.state.gasPrice.toString();
-        web3.eth.sendTransaction(tx, cb)
-      })
-    });
+    if(password){
+      var keypath = path.join(this.client.opt.datadir, "keys")
+      
+      fs.readdir(keypath,(err, keyfiles) =>{
+        if(err) throw(err)
+        async.map(keyfiles, function(file,cb){
+          fs.readFile(path.join(keypath, file),function(e,r){
+            cb(e, JSON.parse(r.toString()))
+          })
+        }, (err,res) => {
+          var address = tx.from.substr(2),
+              senderKey = _.find(res, {address}),
+              pk = keythereum.recover(password, senderKey),
+              web3 = new Web3(new RawProvider("http://localhost:"+this.rpcPort, pk))
+
+          tx.gasPrice = this.state.gasPrice.toString();
+          web3.eth.sendTransaction(tx, cb)
+        })
+      });
+    }else{
+      this.web3.eth.sendTransaction(tx, cb)
+    }
   }
   watchTx(txHash){
     this.watchedTxs.push(txHash)

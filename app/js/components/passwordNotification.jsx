@@ -26,7 +26,7 @@ module.exports = React.createClass({
             </div>
           </form>
           <span >
-            for {(this.props.tx || {}).from || this.props.account}
+            for {(this._mode() === "tx") ? this.props.tx.from : this.props.account}
           </span>
           <span className="icon icon-cancel-squared pull-right" onClick={this._onCloseClick}></span>
         </div>
@@ -38,7 +38,9 @@ module.exports = React.createClass({
   _onSubmit: function(e){
     e.preventDefault()
 
-    appActions.submitPassword(this.state.password)
+    appActions.submitPassword(this.state.password,
+                              this._mode(),
+                              (this._mode() === "tx") ? this.props.tx : this.props.account)
   },
   _onCloseClick: function(e){
     e.preventDefault()
@@ -47,6 +49,17 @@ module.exports = React.createClass({
   },
   _onChange: function(e){
     this.setState({password: e.target.value})
+  },
+  _mode: function(){
+
+    if(this.props.tx){
+      return "tx"
+    }else if(this.props.account){
+      return "unlock"
+    }
+
+
+    return false
   }
 })
 

@@ -1,11 +1,14 @@
 var express = require("express"),
+    EventEmitter = require("events").EventEmitter,
     request = require("request"),
     _ = require("lodash")
 
 var util = require("./util")
 
-module.exports = class RpcProxy{
+module.exports = class RpcProxy extends EventEmitter {
   constructor(opt){
+    super()
+    
     opt = _.extend({
       port: 8545,
       rpcPort: 7545
@@ -25,12 +28,32 @@ module.exports = class RpcProxy{
     app.use(require("body-parser").json());
 
     app.post("/", (req,res) => {
-      request.post({
-        url: `http://localhost:${opt.rpcPort}`,
-        json: req.body
-      },function(err, r, body){
-        res.send(body)
-      })
+      this.emit("request", req)
+
+      if(req.body.method === "eth_sendTransaction"){
+        console.log(req.body);
+        this.emit("sendTransaction", {
+          tx: req.body.params[0],
+          resolve: (err, hash)=>{
+            res.send({
+              jsonrpc: "2.0",
+              id: req.body.id,
+              result: hash
+            })
+          }
+        })
+      }else{
+        request.post({
+          url: `http://localhost:${opt.rpcPort}`,
+          json: req.body
+        },function(err, r, body){
+          if(err){
+            console.log("rpcproxy request", err);
+          }else{
+            res.send(body)
+          } 
+        })
+      }
     })
 
     var activateOnActiveRpc = () => {

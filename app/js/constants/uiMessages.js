@@ -3,7 +3,8 @@ module.exports = require("./util").enumerate([
   "SEND_TX",
   "MOVE_CONTEXT_BACK",
   "MOVE_CONTEXT_FORWARD",
-  "SUBMIT_PASSWORD",
+  "SUBMIT_PASSWORD_TX",
+  "SUBMIT_PASSWORD_UNLOCK",
   "DISMISS_TX",
   "LOCK_ACCOUNT",
   "UNLOCK_ACCOUNT"

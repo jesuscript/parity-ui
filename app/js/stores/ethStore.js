@@ -39,6 +39,22 @@ module.exports = class EthStore extends configure.Eth(Store){
 
     this.rpcProxy = new RpcProxy({port: PROXY_RPC_PORT, rpcPort: REAL_RPC_PORT})
 
+    this.rpcProxy.on("sendTransaction", (payload) => {
+      console.log("ethStore sendTx", payload);
+
+      var password = this.state.passwords[payload.tx.from]
+      
+      if(password){
+        this._sendTransaction(payload.tx, password, payload.resolve)
+      }else{
+        var pendingTxs = this.state.pendingTxs
+
+        pendingTxs.push(payload)
+
+        this.updateState({ pendingTxs })
+      }
+    })
+
     _.each(this.state.transactions, (tx,hash) => {
       this.ethereum.watchTx(hash)
     })
@@ -77,30 +93,35 @@ module.exports = class EthStore extends configure.Eth(Store){
       actions: [{
         actionType: uiMessages.SEND_TX,
         handler: function(payload){
-          var password = this.state.passwords[payload.action.tx.from]
-          
-          if(password){
-            this._sendTransaction(payload.action.tx, password)
-          }else{
-            var pendingTxs = this.state.pendingTxs
-
-            pendingTxs.push(payload.action.tx)
-
-            this.updateState({ pendingTxs })
-          }
+          this.ethereum.sendTx(payload.action.tx)
         }
       }, {
-        actionType: uiMessages.SUBMIT_PASSWORD,
+        actionType: uiMessages.SUBMIT_PASSWORD_TX,
         handler: function(payload){
           var password = payload.action.password,
               state = this.getState(),
               pendingTxs = state.pendingTxs,
-              tx = pendingTxs.shift(1)
+              pending = pendingTxs.shift(1)
 
-          if(tx){
-            this._sendTransaction(tx, password)
+          console.log("submit", pending);
+
+          if(pending){
+            if(pending.tx !== payload.action.tx) console.error("differente pending txs:",
+                                                               pending.tx,
+                                                               payload.action.tx)
+            
+            this._sendTransaction(pending.tx, password, pending.resolve)
             this.updateState({pendingTxs})
-          }else if(state.accountToUnlock){
+          }
+        }
+      }, {
+        actionType: uiMessages.SUBMIT_PASSWORD_UNLOCK,
+        handler: function(payload){
+          var password = payload.action.password,
+              state = this.getState()
+          console.log("unlock");
+
+          if(state.accountToUnlock){
             state.passwords[state.accountToUnlock] = password
             this.updateState({
               passwords: state.passwords,
@@ -132,7 +153,7 @@ module.exports = class EthStore extends configure.Eth(Store){
       }]
     }]
   }
-  _sendTransaction(tx, password){
+  _sendTransaction(tx, password,cb){
     this.ethereum.sendTx(tx, password, (error, txHash) => {
       if(error){
         this.updateState({error})
@@ -151,6 +172,8 @@ module.exports = class EthStore extends configure.Eth(Store){
           }
         })
       }
+
+      cb(error, txHash)
     })
   }
   _processClientState(){
