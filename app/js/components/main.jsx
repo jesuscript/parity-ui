@@ -5,12 +5,14 @@ var React = require('react'),
     remote = require("remote"),
     exec = remote.require("child_process").exec;
 
-var StoreProxy = require("../storeProxy"),
+var StoreProxy = require("../stores/storeProxy"),
     Heading = require("./heading.jsx"),
     ErrorNotification = require("./errorNotification.jsx"),
     PasswordNotification = require("./passwordNotification.jsx"),
     Footer = require("./footer.jsx"),
-    MainContent = require("./mainContent.jsx")
+    MainContent = require("./mainContent.jsx"),
+    appActions = require("../actions/appActions"),
+    uiConstants = require("../constants/uiConstants")
 
 var Main = React.createClass({
   getInitialState: function(){
@@ -20,8 +22,8 @@ var Main = React.createClass({
     }
   },
   componentDidMount: function() {
-    this.registerStore("eth")
-    this.registerStore("ui")
+    this.registerStore("Eth")
+    this.registerStore("Ui")
   },
   render: function(){
     return(
@@ -40,6 +42,8 @@ var Main = React.createClass({
   },
   registerStore: function(name){
     var store = new StoreProxy(name)
+
+    name = name.toLowerCase()
     
     store.addChangeListener(()=>{
       this.onChange(name, store)
@@ -50,9 +54,28 @@ var Main = React.createClass({
   onChange: function(name, store){
     var newState = {}
 
+    if(name === "eth") this._onEthChange(store.state)
+
     newState[name] = store.state
 
     this.setState(newState)
+  },
+  _onEthChange: function(newState){
+    if(this.state.eth){
+      _.each(this.state.eth.unconfirmedTxs, (utx, hash) =>{
+        var tx = newState.transactions[hash]
+        if(tx && tx.blockNumber){
+          var notification = new Notification("Transaction confirmed", {
+            body: tx.hash
+          })
+
+          notification.onclick = function(){
+            appActions.setContext(uiConstants.CONTEXT_ITEM_TXS, tx.hash)
+          }
+          
+        }
+      })
+    }
   }
 });
 

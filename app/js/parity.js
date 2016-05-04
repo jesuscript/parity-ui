@@ -6,51 +6,48 @@ var spawn = require("child_process").spawn,
     ipcMain = require("electron").ipcMain,
     _ = require("lodash")
 
-var Parity = function(opt){
-  this.opt = _.extend({}, this.defaultOpt, opt)
+module.exports = class Parity {
+  get defaultOpt(){
+    return {
+      rpc: true,
+      chain: "morden",
+      datadir: expandHomeDir("~/.parity"),
+      rpcPort: "7545"
+    }
+  }
+  constructor(opt){
+    this.opt = _.extend({}, this.defaultOpt, opt)
 
-  var args = _.flatten(
-    _.map(this.opt, function(v, k){
+    var args = _.flatten(
+      _.map(this.opt, function(v, k){
 
-      return {
-        rpc: v ? "-j" : "",
-        rpcPort: ["--rpcport", v],
-        chain: ["--chain", v],
-        datadir: ["--datadir", v]
-      }[k] || ""
-    })
-  )
+        return {
+          rpc: v ? "-j" : "",
+          rpcPort: ["--rpcport", v],
+          chain: ["--chain", v],
+          datadir: ["--datadir", v]
+        }[k] || ""
+      })
+    )
 
-  console.log("starting parity with:", args)
-  this.clientProcess = spawn("parity", args)
+    console.log("starting parity with:", args)
+    this.clientProcess = spawn("parity", args)
 
-  this.clientProcess.stdout.on("data", processStd)
-  this.clientProcess.stderr.on("data", processStd)
+    this.clientProcess.stdout.on("data", processStd)
+    this.clientProcess.stderr.on("data", processStd)
 
-  process.on('exit', () => {
-    this.terminate();
-  });
-}
-
-_.extend(Parity.prototype, {
-  defaultOpt: {
-    rpc: true,
-    chain: "morden",
-    datadir: expandHomeDir("~/.parity"),
-    rpcPort: "7545"
-  },
-  start: function(opt){
-
-    //this.startFakeRpc("8545")
-  },
-  terminate: function(){
+    process.on('exit', () => {
+      this.terminate();
+    });
+  }
+  terminate(){
     this.clientProcess.kill()
-  },
-  restart: function(opt){
+  }
+  restart(opt){
     this.terminate()
     this.start(opt)
-  },
-  startFakeRpc: function(port){
+  }
+  startFakeRpc(port){
     var app = express()
     
     app.use(function(req,res,next){
@@ -74,8 +71,8 @@ _.extend(Parity.prototype, {
     this.server = app.listen(port, function(){
       console.log("Fake RPC listening on port",port);
     })
-  },
-  fetchVersion: function(cb){
+  }
+  fetchVersion(cb){
     exec("parity -v", (err, stdout, stderr) => {
       var version;
       
@@ -91,7 +88,8 @@ _.extend(Parity.prototype, {
       cb(err, version);
     })
   }
-});
+
+}
 
 function processStd(data){
   var str = data.toString()
@@ -99,4 +97,4 @@ function processStd(data){
   console.log(str);
 }
 
-module.exports = Parity
+

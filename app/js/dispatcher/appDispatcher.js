@@ -1,5 +1,11 @@
 var _ = require("lodash"),
-    Dispatcher = require("flux").Dispatcher
+    Dispatcher = require("flux").Dispatcher,
+    ipc
+
+
+if (process.type !== "browser"){
+  ipc = require("electron").ipcRenderer
+}
 
 
 var messages = require("../constants/messages")
@@ -22,11 +28,11 @@ module.exports = _.extend(new Dispatcher(), {
     if(payload.action && !payload.action.actionType){
       throw new Error("Payload "+payload.source+" action type not set!");
     }
-    
-    if(process.type === "renderer"){
-      require("electron").ipcRenderer.send(messages.DISPATCHER_MESSAGE, payload)
-    }else{
+
+    if(process.type === "browser"){//MAIN
       Dispatcher.prototype.dispatch.call(this,payload)
+    }else{//RENDERER
+      ipc.send(messages.DISPATCHER_MESSAGE, payload)
     }
   }
 })

@@ -1,12 +1,11 @@
-'use strict';
 var app = require('app'),
     expandHomeDir = require('expand-home-dir'),
     BrowserWindow = require('browser-window'),
     path = require("path")
 
-require('electron-reload')(path.join(__dirname, "lib"));
+//require('electron-reload')(path.join(__dirname, "lib"));
 
-var stores = require("./lib/stores")
+var stores = require("./app/js/stores")
 
 
 app.on('ready', function() {

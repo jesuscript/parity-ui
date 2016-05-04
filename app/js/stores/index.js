@@ -1,10 +1,8 @@
 var UiStore = require("./uiStore"),
-    uiConstants = require("../../app/js/constants/uiConstants"),
+    uiConstants = require("../constants/uiConstants"),
     EthStore = require("./ethStore")
 
-var uiStore = new UiStore()
-
-uiStore.setState({
+var uiStore = new UiStore({
   contextHistory: [],
   contextIndex: -1,
   contexts: [

@@ -58,6 +58,7 @@
     "titlebar": "^1.4.0",
     "util": "^0.10.3",
     "web3": "^0.15.3",
-    "web3-raw-provider": "^0.0.4"
+    "web3-raw-provider": "^0.0.5",
+    "bignumber.js": "git+https://github.com/debris/bignumber.js.git#master"
   }
 }

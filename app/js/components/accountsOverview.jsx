@@ -1,7 +1,9 @@
 var React = require("react"),
     Web3 = require("web3"),
     numeral = require("numeral"),
-    _ = require("lodash")
+    _ = require("lodash"),
+    BigNumber = require("bignumber.js")
+
 
 var appActions = require("../actions/appActions")
 
@@ -12,7 +14,7 @@ module.exports = React.createClass({
         Web3.prototype.fromWei(account.balance, "ether").toString()
       ).format("0,0.[0000]")
 
-      var lockButton = this.props.passwords[account.address] ? (
+      var lockButton = (this.props.passwords || {})[account.address] ? (
         <button className="btn btn-default-strong"
                 onClick={this._onLockClick.bind(this, "lock", account.address)}>
           <span className="icon icon-lock-open icon-initial-state icon-danger"></span>

@@ -1,15 +1,16 @@
 var path = require("path"),
     fs = require("fs"),
     async = require("async"),
-    appDispatcher = require("../app/js/dispatcher/appDispatcher"),
-    messages =  require("../app/js/constants/messages"),
     keythereum = require("keythereum"),
     _ = require("lodash"),
-    ethMessages = require("../app/js/constants/ethMessages"),
     Web3 = require("web3"),
     RawProvider = require("web3-raw-provider"),
-    http = require("http")
-    
+    http = require("http"),
+    BigNumber = require("bignumber.js")
+
+var appDispatcher = require("./dispatcher/appDispatcher"),
+    messages =  require("./constants/messages"),
+    ethMessages = require("./constants/ethMessages")
 
 
 /*
@@ -40,7 +41,7 @@ Ethereum.prototype = {
 
     var updateClientStatus = () => {
       this.fetchClientStatus((err, res) =>{
-        if(err) throw err;
+        if(err) return console.error(err);
 
         var syncing = (res.rpcData || {}).syncing
 
@@ -113,10 +114,12 @@ Ethereum.prototype = {
             balances: ["accounts", (res, cb) => {
               async.map(res.accounts, (account,cb)=>{
                 this.web3.eth.getBalance(account, (err, bal) => {
-                  cb(null, {
+                  cb(err, {
                     address: account,
-                    balance: bal
+                    //bit of a hack, but BigNumber cannot be passed over ipc otherwise
+                    balance: bal && bal.toString()
                   })
+
                 })
               }, cb)
             }],
@@ -124,7 +127,13 @@ Ethereum.prototype = {
               async.reduce(this.watchedTxs, {}, (memo,hash,cb) => {
                 if(hash){
                   this.web3.eth.getTransaction(hash, (err, tx) => {
-                    if(tx) memo[hash] = tx
+                    if(tx) {
+                      memo[hash] = tx
+                      
+                      _.each(tx, function(v,k){
+                        memo[hash][k] = (v instanceof BigNumber) ? v.toString() : v
+                      })
+                    }
                     
                     cb(err, memo)
                   })

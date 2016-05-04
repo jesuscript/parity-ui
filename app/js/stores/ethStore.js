@@ -4,27 +4,30 @@ var async = require("async"),
 
 
 var Store = require("./store"),
-    ethMessages = require("../../app/js/constants/ethMessages"),
-    messages = require("../../app/js/constants/messages"),
-    ethConstants = require("../../app/js/constants/ethConstants"),
-    uiMessages = require("../../app/js/constants/uiMessages"),
-    uiConstants = require("../../app/js/constants/uiConstants"),
-    appActions = require("../../app/js/actions/appActions"),
+    configure = require("./configure"),
+    ethMessages = require("../constants/ethMessages"),
+    messages = require("../constants/messages"),
+    ethConstants = require("../constants/ethConstants"),
+    uiMessages = require("../constants/uiMessages"),
+    uiConstants = require("../constants/uiConstants"),
+    appActions = require("../actions/appActions"),
     Ethereum = require("../ethereum"),
-    appDispatcher = require("../../app/js/dispatcher/appDispatcher"),
+    appDispatcher = require("../dispatcher/appDispatcher"),
     Parity = require("../parity")
 
 
 
-module.exports = class EthStore extends Store{
-  get storeName(){ return "ethStore" }
-  constructor(){
-    super()
+module.exports = class EthStore extends configure.Eth(Store){
+  constructor(state){
+    super(state)
 
+    this.updateState({
+      passwords: {},
+      pendingTxs: [],
+      unconfirmedTxs: {}
+    }) 
 
     this.ethereum = new Ethereum(new Parity({datadir:path.join(process.env.HOME, ".parity")}))
-
-    
     this.ethereum.startUpdateLoop()
 
     async.auto({
@@ -48,7 +51,7 @@ module.exports = class EthStore extends Store{
 
         //   cb()
         // })
-      
+        
         cb()
       },
       clientVersion: ["loadState", (res, cb) => {
@@ -62,7 +65,7 @@ module.exports = class EthStore extends Store{
 
       this.updateState({
         version: {
-          uiVersion: require("../../package.json").version,
+          uiVersion: require("../../../package.json").version,
           clientVersion: res.clientVersion
         }
       })
@@ -82,16 +85,16 @@ module.exports = class EthStore extends Store{
       actions: [{
         actionType: uiMessages.SEND_TX,
         handler: function(payload){
-          var state = this.getState(),
-              password = state.passwords[payload.action.tx.from]
+          var password = this.state.passwords[payload.action.tx.from]
           
           if(password){
             this._sendTransaction(payload.action.tx, password)
           }else{
-            state.pendingTxs.push(payload.action.tx)
-            this.updateState({
-              pendingTxs: state.pendingTxs
-            })
+            var pendingTxs = this.state.pendingTxs
+
+            pendingTxs.push(payload.action.tx)
+
+            this.updateState({ pendingTxs })
           }
         }
       }, {
@@ -116,12 +119,12 @@ module.exports = class EthStore extends Store{
       },{
         actionType: uiMessages.DISMISS_TX,
         handler: function(payload){
-          this.updateState({pendingTxs: this.getState().pendingTxs.slice(1)})
+          this.updateState({pendingTxs: this.state.pendingTxs.slice(1)})
         }
       },{
         actionType: uiMessages.LOCK_ACCOUNT,
         handler: function(payload){
-          var passwords = this.getState().passwords
+          var passwords = this.state.passwords
 
           passwords[payload.action.address] = undefined
 
@@ -142,17 +145,12 @@ module.exports = class EthStore extends Store{
       if(error){
         this.updateState({error})
       } else {
-        this.ethereum.watchTx(txHash)
-
-        //TODO: replace all this trash with state save on exit
-        // var transactions = this.getState().transactions
-
-        // transactions[txHash] = null
+        var unconfirmedTxs = this.state.unconfirmedTxs
+        unconfirmedTxs[txHash] = true
+        this.updateState({unconfirmedTxs})
         
-        // this.updateState({transactions})
-        // this.saveState()
-        // /trash
-
+        this.ethereum.watchTx(txHash)
+        
         appDispatcher.dispatch({
           source: messages.ETH_ACTION,
           action:{
@@ -175,28 +173,19 @@ module.exports = class EthStore extends Store{
     }
 
     if(state.running){
-      this._notifyNewConfirmedTx(state)
-      this.updateState(state)
-    }
-  }
-  _notifyNewConfirmedTx(parityState){
-    var state = this.getState()
-    
-    _.each(state.transactions, function(tx){
-      if(tx){
-        var newTxState = parityState.transactions[tx.hash]
-        
-        if(newTxState && !tx.blockNumber && newTxState.blockNumber){
-          var notification = new Notification("Transaction confirmed", {
-            body: tx.hash
-          })
-
-          notification.onclick = function(){
-            appActions.setContext(uiConstants.CONTEXT_ITEM_TXS, tx.hash)
+      let unconfirmedTxs = this.state.unconfirmedTxs
+      
+      _.each(unconfirmedTxs, (utx,hash) => {
+        var tx = state.transactions[hash]
+        if(tx){
+          if(tx.blockNumber){
+            _.unset(unconfirmedTxs, hash)
           }
         }
-      }
-    })
+      })
+
+      this.updateState(_.extend({unconfirmedTxs}, state))
+    }
   }
 }
 

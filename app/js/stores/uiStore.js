@@ -1,16 +1,15 @@
 var _ = require("lodash")
 
 var Store = require("./store"),
-    messages = require("../../app/js/constants/messages"),
-    uiMessages = require("../../app/js/constants/uiMessages"),
-    ethMessages = require("../../app/js/constants/ethMessages"),
-    uiConstants = require("../../app/js/constants/uiConstants")
+    configure = require("./configure"),
+    messages = require("../constants/messages"),
+    uiMessages = require("../constants/uiMessages"),
+    ethMessages = require("../constants/ethMessages"),
+    uiConstants = require("../constants/uiConstants")
 
-
-module.exports = class UiStore extends Store {
-  get storeName(){ return "uiStore" }
-  constructor(){
-    super()
+module.exports = class UiStore extends configure.Ui(Store) {
+  constructor(state){
+    super(state)
   }
   get listen(){
     return  [{
