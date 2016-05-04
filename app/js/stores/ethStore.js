@@ -106,9 +106,10 @@ module.exports = class EthStore extends configure.Eth(Store){
           console.log("submit", pending);
 
           if(pending){
-            if(pending.tx !== payload.action.tx) console.error("differente pending txs:",
-                                                               pending.tx,
-                                                               payload.action.tx)
+            if(!_.isEqual(pending.tx, payload.action.tx)) {
+              //this should never happen
+              throw new Error("Different pending TX and payload TX")
+            }
             
             this._sendTransaction(pending.tx, password, pending.resolve)
             this.updateState({pendingTxs})
