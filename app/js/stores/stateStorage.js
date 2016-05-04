@@ -1,6 +1,8 @@
 var fs = require("fs"),
     path = require("path")
 
+//TODO: store states in binary form
+
 module.exports = {
   initDir: function(datadir){
     this.stateDir = path.join(datadir, "states")

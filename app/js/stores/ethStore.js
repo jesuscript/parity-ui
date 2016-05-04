@@ -12,9 +12,12 @@ var Store = require("./store"),
     uiConstants = require("../constants/uiConstants"),
     appActions = require("../actions/appActions"),
     Ethereum = require("../ethereum"),
+    RpcProxy = require("../rpcProxy"),
     appDispatcher = require("../dispatcher/appDispatcher"),
     Parity = require("../parity")
 
+const REAL_RPC_PORT = 7545
+const PROXY_RPC_PORT = 8545
 
 
 module.exports = class EthStore extends configure.Eth(Store){
@@ -27,7 +30,14 @@ module.exports = class EthStore extends configure.Eth(Store){
       unconfirmedTxs: {}
     }) 
 
-    this.ethereum = new Ethereum(new Parity({datadir:path.join(process.env.HOME, ".parity")}))
+    this.ethereum = new Ethereum(new Parity({
+      datadir: path.join(process.env.HOME, ".parity"),
+      rpcPort: REAL_RPC_PORT
+    }),{
+      rpcPort: PROXY_RPC_PORT
+    })
+
+    this.rpcProxy = new RpcProxy({port: PROXY_RPC_PORT, rpcPort: REAL_RPC_PORT})
 
     _.each(this.state.transactions, (tx,hash) => {
       this.ethereum.watchTx(hash)

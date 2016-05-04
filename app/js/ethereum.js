@@ -5,12 +5,12 @@ var path = require("path"),
     _ = require("lodash"),
     Web3 = require("web3"),
     RawProvider = require("web3-raw-provider"),
-    http = require("http"),
     BigNumber = require("bignumber.js")
 
 var appDispatcher = require("./dispatcher/appDispatcher"),
     messages =  require("./constants/messages"),
-    ethMessages = require("./constants/ethMessages")
+    ethMessages = require("./constants/ethMessages"),
+    util = require("./util")
 
 
 /*
@@ -20,8 +20,9 @@ var appDispatcher = require("./dispatcher/appDispatcher"),
  */
 
 module.exports = class Ethereum {
-  constructor(client){
-    this.client = client 
+  constructor(client, opt){
+    this.client = client
+    this.rpcPort = opt.rpcPort
 
     this.state = {
       currentBlock: 0,
@@ -33,11 +34,10 @@ module.exports = class Ethereum {
     this.watchedTxs = []
 
     this.web3 = new Web3(new Web3.providers.HttpProvider(
-      `http://localhost:${this.client.opt.rpcPort}`
+      `http://localhost:${this.rpcPort}`
     ))
   }
   startUpdateLoop(){
-
     var updateClientStatus = () => {
       this.fetchClientStatus((err, res) =>{
         if(err) return console.error(err);
@@ -80,7 +80,7 @@ module.exports = class Ethereum {
         var address = tx.from.substr(2),
             senderKey = _.find(res, {address}),
             pk = keythereum.recover(password, senderKey),
-            web3 = new Web3(new RawProvider("http://localhost:"+this.client.opt.rpcPort, pk))
+            web3 = new Web3(new RawProvider("http://localhost:"+this.rpcPort, pk))
 
         tx.gasPrice = this.state.gasPrice.toString();
         web3.eth.sendTransaction(tx, cb)
@@ -93,15 +93,7 @@ module.exports = class Ethereum {
   fetchClientStatus(cb){
     async.auto({
       isRunning: (cb) =>{
-        var req = http.request({
-          hostname: "localhost",
-          port: this.client.opt.rpcPort,
-          method: "POST"
-        }, (res) =>{ cb(null, true) })
-
-        req.on("error", (e)=>{ cb(null,false) })
-
-        req.end()
+        util.ping("localhost", this.rpcPort, cb)
       },
       rpcData: ["isRunning",(res, cb) =>{
         if(res.isRunning){

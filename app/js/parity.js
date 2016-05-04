@@ -1,9 +1,7 @@
 var spawn = require("child_process").spawn,
-    express = require("express"),
     expandHomeDir = require('expand-home-dir'),
     coffeeScript = require("coffee-script"),
     exec = require("child_process").exec,
-    ipcMain = require("electron").ipcMain,
     _ = require("lodash")
 
 module.exports = class Parity {
@@ -12,7 +10,7 @@ module.exports = class Parity {
       rpc: true,
       chain: "morden",
       datadir: expandHomeDir("~/.parity"),
-      rpcPort: "7545"
+      rpcPort: 8545
     }
   }
   constructor(opt){
@@ -47,31 +45,6 @@ module.exports = class Parity {
   restart(opt){
     this.terminate()
     this.start(opt)
-  }
-  startFakeRpc(port){
-    var app = express()
-    
-    app.use(function(req,res,next){
-      res.header("Access-Control-Allow-Origin", "*");
-      res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, PATCH");
-      res.header("Access-Control-Allow-Headers",
-                 "Accept, Content-Type, Authorization, X-Requested-With");
-      
-      next();
-    });
-    
-    app.use(require("body-parser").json());
-
-    app.post("/", (req,res) => {
-      this.proxy.send("rpcRequest",req.body,function(res){
-        console.log("res", res);
-        res.send()
-      })
-    })
-
-    this.server = app.listen(port, function(){
-      console.log("Fake RPC listening on port",port);
-    })
   }
   fetchVersion(cb){
     exec("parity -v", (err, stdout, stderr) => {
