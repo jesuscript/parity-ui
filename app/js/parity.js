@@ -41,6 +41,7 @@ module.exports = class Parity {
     });
   }
   terminate(){
+    console.log("terminating parity...");
     this.clientProcess.kill()
   }
   restart(opt){

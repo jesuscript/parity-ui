@@ -19,25 +19,24 @@ var appDispatcher = require("./dispatcher/appDispatcher"),
  * Active - up to date
  */
 
-var Ethereum = function(client){
-  this.client = client 
+module.exports = class Ethereum {
+  constructor(client){
+    this.client = client 
 
-  this.state = {
-    currentBlock: 0,
-    running: false,
-    syncing: false,
-    transactions: []
-  };
+    this.state = {
+      currentBlock: 0,
+      running: false,
+      syncing: false,
+      transactions: []
+    };
 
-  this.watchedTxs = []
+    this.watchedTxs = []
 
-  this.web3 = new Web3(new Web3.providers.HttpProvider(
-    `http://localhost:${this.client.opt.rpcPort}`
-  ))
-}
-
-Ethereum.prototype = {
-  startUpdateLoop: function(){
+    this.web3 = new Web3(new Web3.providers.HttpProvider(
+      `http://localhost:${this.client.opt.rpcPort}`
+    ))
+  }
+  startUpdateLoop(){
 
     var updateClientStatus = () => {
       this.fetchClientStatus((err, res) =>{
@@ -58,17 +57,17 @@ Ethereum.prototype = {
     }
 
     updateClientStatus()
-  },
-  fetchVersion: function(cb){
+  }
+  fetchVersion(cb){
     this.client.fetchVersion(cb);
-  },
-  dispatch: function(actionType, action){
+  }
+  dispatch(actionType, action){
     appDispatcher.dispatch({
       source: messages.ETHEREUM_CLIENT_ACTION,
       action: _.extend({actionType}, action)
     })
-  },
-  sendTx: function(tx, password, cb){
+  }
+  sendTx(tx, password, cb){
     var keypath = path.join(this.client.opt.datadir, "keys")
     
     fs.readdir(keypath,(err, keyfiles) =>{
@@ -87,11 +86,11 @@ Ethereum.prototype = {
         web3.eth.sendTransaction(tx, cb)
       })
     });
-  },
-  watchTx: function(txHash){
+  }
+  watchTx(txHash){
     this.watchedTxs.push(txHash)
-  },
-  fetchClientStatus: function(cb){
+  }
+  fetchClientStatus(cb){
     async.auto({
       isRunning: (cb) =>{
         var req = http.request({
@@ -153,4 +152,3 @@ Ethereum.prototype = {
   }
 }
 
-module.exports = Ethereum;

@@ -28,37 +28,19 @@ module.exports = class EthStore extends configure.Eth(Store){
     }) 
 
     this.ethereum = new Ethereum(new Parity({datadir:path.join(process.env.HOME, ".parity")}))
+
+    _.each(this.state.transactions, (tx,hash) => {
+      this.ethereum.watchTx(hash)
+    })
+    
     this.ethereum.startUpdateLoop()
 
     async.auto({
-      loadState: (cb) => {
-        // this.loadState((err, state) =>{
-        //   _.each(state.transactions, (v,k) => {
-        //     this.ethereum.watchTx(k)
-        //   })
-
-        //   this.setState(_.extend({
-        //     defaultGas: 90000,
-        //     pendingTxs: [
-        //       //DEBUG
-        //       // {
-        //       //   from: "0xba5587f8469f9f9a8ea9d49514241ff3a89f26c3",
-        //       //   to: "0xba5587f8469f9f9a8ea9d49514241ff3a89f26c3",
-        //       //   value: 100000
-        //       // }
-        //     ]
-        //   }, state))
-
-        //   cb()
-        // })
-        
-        cb()
-      },
-      clientVersion: ["loadState", (res, cb) => {
+      clientVersion: (cb) => {
         this.ethereum.fetchVersion(function(err, version){
           cb(err, version);
         })
-      }]
+      }
     }, (err, res) => {
 
       this._processClientState()
@@ -186,6 +168,9 @@ module.exports = class EthStore extends configure.Eth(Store){
 
       this.updateState(_.extend({unconfirmedTxs}, state))
     }
+  }
+  get stateToSave(){
+    return _.pick(this.state, "transactions")
   }
 }
 

@@ -2,7 +2,7 @@ var fs = require("fs"),
     path = require("path")
 
 module.exports = {
-  start: function(datadir){
+  initDir: function(datadir){
     this.stateDir = path.join(datadir, "states")
     
     if(!fs.existsSync(this.stateDir)) fs.mkdirSync(this.stateDir)
@@ -12,7 +12,9 @@ module.exports = {
   },
   load: function(name, cb){
     fs.readFile(path.join(this.stateDir, name), function(err, content){
-      cb(err, content ? JSON.parse(content) : {})
+      if(err) console.warn(err)
+      
+      cb(null, content ? JSON.parse(content) : {})
     })
   }
 }
